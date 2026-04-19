@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Tic-Tac-Toe</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            color: white;
+            margin: 0;
+        }
+
+        /* 🎥 Background Video */
+        #bgVideo {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        h1 {
+            margin-top: 20px;
+            text-shadow: 2px 2px 5px black;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 30px;
+            background: rgba(255,255,255,0.8);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cell:hover {
+            background: #e2e8f0;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 20px;
+            text-shadow: 2px 2px 5px black;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: blue;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🎥 Background Video -->
+<video autoplay muted loop id="bgVideo">
+    <source src="video.mp4" type="video/mp4">
+</video>
+
+<h1>AI Tic-Tac-Toe 🤖</h1>
+
+<div class="board" id="board"></div>
+
+<div id="status">Your turn (X)</div>
+
+<button onclick="restart()">Restart</button>
+
+<script>
+let board = ["", "", "", "", "", "", "", "", ""];
+let human = "X";
+let ai = "O";
+let gameOver = false;
+
+const boardDiv = document.getElementById("board");
+
+function createBoard() {
+    boardDiv.innerHTML = "";
+    board.forEach((cell, i) => {
+        let btn = document.createElement("button");
+        btn.classList.add("cell");
+        btn.innerText = cell;
+        btn.onclick = () => playerMove(i);
+        boardDiv.appendChild(btn);
+    });
+}
+
+createBoard();
+
+function playerMove(index) {
+    if (board[index] === "" && !gameOver) {
+        board[index] = human;
+        createBoard();
+
+        if (checkWinner(board, human)) {
+            document.getElementById("status").innerText = "You Win 🎉";
+            gameOver = true;
+            return;
+        }
+
+        if (!board.includes("")) {
+            document.getElementById("status").innerText = "Draw 🤝";
+            gameOver = true;
+            return;
+        }
+
+        aiMove();
+    }
+}
+
+function aiMove() {
+    let bestScore = -Infinity;
+    let move;
+
+    for (let i = 0; i < 9; i++) {
+        if (board[i] === "") {
+            board[i] = ai;
+            let score = minimax(board, 0, false);
+            board[i] = "";
+            if (score > bestScore) {
+                bestScore = score;
+                move = i;
+            }
+        }
+    }
+
+    board[move] = ai;
+    createBoard();
+
+    if (checkWinner(board, ai)) {
+        document.getElementById("status").innerText = "AI Wins 🤖";
+        gameOver = true;
+    }
+}
+
+function minimax(newBoard, depth, isMaximizing) {
+    if (checkWinner(newBoard, ai)) return 1;
+    if (checkWinner(newBoard, human)) return -1;
+    if (!newBoard.includes("")) return 0;
+
+    if (isMaximizing) {
+        let best = -Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (newBoard[i] === "") {
+                newBoard[i] = ai;
+                let score = minimax(newBoard, depth + 1, false);
+                newBoard[i] = "";
+                best = Math.max(score, best);
+            }
+        }
+        return best;
+    } else {
+        let best = Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (newBoard[i] === "") {
+                newBoard[i] = human;
+                let score = minimax(newBoard, depth + 1, true);
+                newBoard[i] = "";
+                best = Math.min(score, best);
+            }
+        }
+        return best;
+    }
+}
+
+function checkWinner(b, player) {
+    const winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
+
+    return winPatterns.some(pattern => 
+        pattern.every(i => b[i] === player)
+    );
+}
+
+function restart() {
+    board = ["", "", "", "", "", "", "", "", ""];
+    gameOver = false;
+    document.getElementById("status").innerText = "Your turn (X)";
+    createBoard();
+}
+</script>
+
+</body>
+</html>
