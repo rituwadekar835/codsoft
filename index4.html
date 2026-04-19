@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Recommendation System</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <!-- Particles.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* AI Background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,#141e30,#243b55);
+            z-index: -1;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            width: 360px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            background: #764ba2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #5a3790;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f3f3f3;
+            border-radius: 10px;
+            min-height: 80px;
+        }
+
+        .item {
+            background: #764ba2;
+            color: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 10px;
+        }
+
+        .stars {
+            color: gold;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- AI Background -->
+<div id="particles-js"></div>
+
+<div class="container">
+    <div class="card">
+        <h1>🎯 Smart Recommender</h1>
+
+        <select id="category">
+            <option value="">-- Choose Category --</option>
+            <option value="movies">🎬 Movies</option>
+            <option value="books">📚 Books</option>
+            <option value="products">🛍️ Products</option>
+        </select>
+
+        <button onclick="recommend()">Get Recommendations</button>
+
+        <div class="result" id="result">
+            Your recommendations will appear here...
+        </div>
+    </div>
+</div>
+
+<script>
+// ⭐ Rating function
+function getStars(rating) {
+    let stars = "";
+    for (let i = 0; i < rating; i++) {
+        stars += "⭐";
+    }
+    return stars;
+}
+
+// Recommendation function
+function recommend() {
+    let category = document.getElementById("category").value;
+
+    if (category === "") {
+        document.getElementById("result").innerHTML = "⚠️ Please select a category!";
+        return;
+    }
+
+    let data = {
+        movies: [
+            {name: "Avengers", rating: 5},
+            {name: "Inception", rating: 5},
+            {name: "Titanic", rating: 4},
+            {name: "Interstellar", rating: 5},
+            {name: "3 Idiots", rating: 5}
+        ],
+        books: [
+            {name: "Harry Potter", rating: 5},
+            {name: "Atomic Habits", rating: 5},
+            {name: "Rich Dad Poor Dad", rating: 4},
+            {name: "Ikigai", rating: 4}
+        ],
+        products: [
+            {name: "Laptop", rating: 5},
+            {name: "Smartphone", rating: 4},
+            {name: "Headphones", rating: 4},
+            {name: "Smart Watch", rating: 4}
+        ]
+    };
+
+    let items = data[category];
+    items = items.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+    let output = "";
+
+    items.forEach(item => {
+        output += `
+            <div class="item">
+                ${item.name}
+                <div class="stars">${getStars(item.rating)}</div>
+            </div>
+        `;
+    });
+
+    document.getElementById("result").innerHTML = output;
+}
+
+// Particles JS config
+particlesJS("particles-js", {
+    particles: {
+        number: { value: 80 },
+        size: { value: 3 },
+        move: { speed: 2 },
+        line_linked: { enable: true },
+    }
+});
+</script>
+
+</body>
+</html>
